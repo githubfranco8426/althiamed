@@ -75,5 +75,28 @@
       if (event.key === 'ArrowRight') { event.preventDefault(); setSlide(currentSlide + 1); }
     });
   }
+  const heroVideo = document.querySelector('[data-hero-video]');
+  const videoToggle = document.querySelector('[data-hero-video-toggle]');
+  if (heroVideo && videoToggle) {
+    const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+    const setVideoState = playing => {
+      videoToggle.setAttribute('aria-pressed', String(!playing));
+      videoToggle.firstElementChild.textContent = playing ? 'Ⅱ' : '▶';
+      videoToggle.lastElementChild.textContent = playing ? 'Detener movimiento' : 'Reanudar movimiento';
+    };
+    const startVideo = () => {
+      if (reducedMotion.matches) return;
+      heroVideo.play().then(() => setVideoState(true)).catch(() => setVideoState(false));
+    };
+    startVideo();
+    reducedMotion.addEventListener('change', event => {
+      if (event.matches) { heroVideo.pause(); setVideoState(false); } else startVideo();
+    });
+    videoToggle.addEventListener('click', () => {
+      const wasPaused = heroVideo.paused;
+      if (wasPaused) startVideo(); else { heroVideo.pause(); setVideoState(false); }
+      track('hero_video_toggle', 'hero', wasPaused ? 'play' : 'pause');
+    });
+  }
   track('page_view', 'landing');
 })();
