@@ -54,5 +54,26 @@
   const openPrivacy = () => { document.querySelector('#privacidad details').open = true; };
   document.querySelector('#privacy-link').addEventListener('click', openPrivacy);
   if (location.hash === '#privacidad') openPrivacy();
+  const carousel = document.querySelector('.team-carousel');
+  if (carousel) {
+    const carouselTrack = carousel.querySelector('.team-track');
+    const slides = [...carousel.querySelectorAll('.team-slide')];
+    const dots = [...carousel.querySelectorAll('[data-carousel-dot]')];
+    let currentSlide = 0;
+    const setSlide = index => {
+      currentSlide = (index + slides.length) % slides.length;
+      carouselTrack.style.transform = `translateX(-${currentSlide * 100}%)`;
+      slides.forEach((slide, position) => slide.setAttribute('aria-hidden', String(position !== currentSlide)));
+      dots.forEach((dot, position) => dot.setAttribute('aria-selected', String(position === currentSlide)));
+      track('team_carousel_slide', 'team', String(currentSlide + 1));
+    };
+    carousel.querySelector('[data-carousel-prev]').addEventListener('click', () => setSlide(currentSlide - 1));
+    carousel.querySelector('[data-carousel-next]').addEventListener('click', () => setSlide(currentSlide + 1));
+    dots.forEach((dot, index) => dot.addEventListener('click', () => setSlide(index)));
+    carousel.addEventListener('keydown', event => {
+      if (event.key === 'ArrowLeft') { event.preventDefault(); setSlide(currentSlide - 1); }
+      if (event.key === 'ArrowRight') { event.preventDefault(); setSlide(currentSlide + 1); }
+    });
+  }
   track('page_view', 'landing');
 })();
