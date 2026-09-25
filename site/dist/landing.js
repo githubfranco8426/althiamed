@@ -98,5 +98,14 @@
       track('hero_video_toggle', 'hero', wasPaused ? 'play' : 'pause');
     });
   }
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
+    const revealItems = document.querySelectorAll('.care-strip, .section, .team-section, .trust, .faq-section, .final-cta');
+    const revealObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) { entry.target.classList.add('is-visible'); revealObserver.unobserve(entry.target); }
+      });
+    }, { threshold: .12 });
+    revealItems.forEach(item => { item.classList.add('reveal'); revealObserver.observe(item); });
+  }
   track('page_view', 'landing');
 })();
